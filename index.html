@@ -1,6 +1,76 @@
-git clone https://github.com/belmondziarz91/mojastrona.git
-cd nazwa-repozytorium
-# skopiuj swoje pliki do tego folderu
-git add .
-git commit -m "Dodano pliki strony"
-git push
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mój Blog</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        header {
+            background: #0078d7;
+            color: white;
+            padding: 1rem 0;
+            text-align: center;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: #005bb5;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #0078d7;
+        }
+        footer {
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+            background: #0078d7;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Witaj na moim blogu!</h1>
+    </header>
+    <nav>
+        <a href="#">Strona główna</a>
+        <a href="#about">O mnie</a>
+        <a href="#contact">Kontakt</a>
+    </nav>
+    <div class="container">
+        <h2>Ostatni wpis</h2>
+        <p>Witaj na moim blogu! To jest przykładowa strona stworzona przy użyciu GitHub Pages. Możesz tutaj dzielić się swoimi przemyśleniami, pomysłami lub czymkolwiek chcesz. Dostosuj ją według swoich potrzeb!</p>
+        <h3>Czym zajmuję się?</h3>
+        <p>Interesuję się programowaniem, technologią i tworzeniem stron internetowych. W wolnym czasie uwielbiam podróże, czytanie książek i poznawanie nowych rzeczy.</p>
+    </div>
+    <footer>
+        <p>&copy; 2025 Mój Blog. Wszelkie prawa zastrzeżone.</p>
+    </footer>
+</body>
+</html>
