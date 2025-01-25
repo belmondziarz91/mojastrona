@@ -3,74 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mój Blog</title>
+    <title>Prosta Gra Logiczna</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            line-height: 1.6;
+            text-align: center;
+            background-color: #f4f4f9;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f9;
-            color: #333;
         }
         header {
             background: #0078d7;
             color: white;
-            padding: 1rem 0;
-            text-align: center;
-        }
-        nav {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
             padding: 1rem;
-            background: #005bb5;
-        }
-        nav a {
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        nav a:hover {
-            text-decoration: underline;
         }
         .container {
-            max-width: 800px;
+            max-width: 600px;
             margin: 2rem auto;
             padding: 1rem;
             background: white;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-        h1 {
-            color: #0078d7;
-        }
-        footer {
-            text-align: center;
-            padding: 1rem;
-            margin-top: 2rem;
-            background: #0078d7;
+        button {
+            padding: 0.5rem 1rem;
+            margin: 1rem;
+            font-size: 1rem;
             color: white;
+            background-color: #0078d7;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #005bb5;
+        }
+        #result {
+            font-size: 1.2rem;
+            margin-top: 1rem;
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>Witaj na moim blogu!</h1>
+        <h1>Gra Logiczna</h1>
     </header>
-    <nav>
-        <a href="index.html">Strona główna</a>
-        <a href="about.html">O mnie</a>
-        <a href="contact.html">Kontakt</a>
-    </nav>
     <div class="container">
-        <h2>Ostatni wpis</h2>
-        <p>Witaj na moim blogu! To jest przykładowa strona stworzona przy użyciu GitHub Pages. Możesz tutaj dzielić się swoimi przemyśleniami, pomysłami lub czymkolwiek chcesz. Dostosuj ją według swoich potrzeb!</p>
-        <h3>Czym zajmuję się?</h3>
-        <p>Interesuję się programowaniem, technologią i tworzeniem stron internetowych. W wolnym czasie uwielbiam podróże, czytanie książek i poznawanie nowych rzeczy.</p>
+        <h2>Zgadnij liczbę</h2>
+        <p>Komputer wylosował liczbę od 1 do 100. Czy potrafisz ją zgadnąć?</p>
+        <input type="number" id="guess" placeholder="Wpisz liczbę" />
+        <button onclick="checkGuess()">Sprawdź</button>
+        <div id="result"></div>
     </div>
     <footer>
-        <p>&copy; 2025 Mój Blog. Wszelkie prawa zastrzeżone.</p>
+        <p>&copy; 2025 Prosta Gra Logiczna</p>
     </footer>
+    <script>
+        const randomNumber = Math.floor(Math.random() * 100) + 1;
+        console.log("Wylosowana liczba (do debugowania):", randomNumber);
+
+        function checkGuess() {
+            const guess = Number(document.getElementById('guess').value);
+            const result = document.getElementById('result');
+
+            if (!guess) {
+                result.textContent = "Proszę wpisać liczbę!";
+                result.style.color = "red";
+                return;
+            }
+
+            if (guess === randomNumber) {
+                result.textContent = "Gratulacje! Zgadłeś!";
+                result.style.color = "green";
+            } else if (guess < randomNumber) {
+                result.textContent = "Za mało! Spróbuj większej liczby.";
+                result.style.color = "orange";
+            } else {
+                result.textContent = "Za dużo! Spróbuj mniejszej liczby.";
+                result.style.color = "orange";
+            }
+        }
+    </script>
 </body>
 </html>
