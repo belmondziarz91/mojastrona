@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prosta Gra Logiczna</title>
-    <link rel="icon" href="favicon.ico">
-    <link rel="shortcut icon" href="favicon.ico">
+    <title>Wisielec</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #f4f4f9;
+            background-color: #1e1e2f;
+            color: #ffffff;
             margin: 0;
             padding: 0;
         }
@@ -20,19 +20,28 @@
             padding: 1rem;
         }
         .container {
-            max-width: 600px;
+            max-width: 700px;
             margin: 2rem auto;
             padding: 1rem;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background: #282c34;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+        .word-display {
+            font-size: 2rem;
+            letter-spacing: 0.5rem;
+            margin: 1rem 0;
+        }
+        .letters {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
         }
         button {
-            padding: 0.5rem 1rem;
-            margin: 1rem;
+            padding: 0.5rem;
             font-size: 1rem;
-            color: white;
             background-color: #0078d7;
+            color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
@@ -40,51 +49,110 @@
         button:hover {
             background-color: #005bb5;
         }
-        #result {
-            font-size: 1.2rem;
+        button:disabled {
+            background-color: #444;
+            cursor: not-allowed;
+        }
+        #message {
+            font-size: 1.5rem;
             margin-top: 1rem;
+        }
+        .hangman {
+            margin: 2rem auto;
+        }
+        .hangman img {
+            width: 200px;
+            height: auto;
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>Gra Logiczna</h1>
+        <h1>Gra Wisielec</h1>
     </header>
     <div class="container">
-        <h2>Zgadnij liczbę</h2>
-        <p>Komputer wylosował liczbę od 1 do 100. Czy potrafisz ją zgadnąć?</p>
-        <input type="number" id="guess" placeholder="Wpisz liczbę" />
-        <button onclick="checkGuess()">Sprawdź</button>
-        <div id="result"></div>
+        <div class="hangman">
+            <img id="hangman-image" src="hangman0.png" alt="Wisielec">
+        </div>
+        <div class="word-display" id="word-display">_ _ _ _ _</div>
+        <div class="letters" id="letters"></div>
+        <div id="message"></div>
+        <button id="reset-btn" style="display:none;">Zagraj ponownie</button>
     </div>
     <footer>
-        <p>&copy; 2025 Prosta Gra Logiczna</p>
+        <p>&copy; 2025 Wisielec</p>
     </footer>
+
     <script>
-        const randomNumber = Math.floor(Math.random() * 100) + 1;
-        console.log("Wylosowana liczba (do debugowania):", randomNumber);
+        const words = ["PROGRAMISTA", "JAVASCRIPT", "PRZEGLADARKA", "KOMPUTER", "INTERNET"];
+        let chosenWord = "";
+        let guessedLetters = [];
+        let wrongGuesses = 0;
+        const maxGuesses = 6;
 
-        function checkGuess() {
-            const guess = Number(document.getElementById('guess').value);
-            const result = document.getElementById('result');
+        const wordDisplay = document.getElementById("word-display");
+        const lettersDiv = document.getElementById("letters");
+        const hangmanImage = document.getElementById("hangman-image");
+        const messageDiv = document.getElementById("message");
+        const resetButton = document.getElementById("reset-btn");
 
-            if (!guess) {
-                result.textContent = "Proszę wpisać liczbę!";
-                result.style.color = "red";
-                return;
+        function initGame() {
+            chosenWord = words[Math.floor(Math.random() * words.length)];
+            guessedLetters = [];
+            wrongGuesses = 0;
+
+            updateWordDisplay();
+            generateLetterButtons();
+            hangmanImage.src = "hangman0.png";
+            messageDiv.textContent = "";
+            resetButton.style.display = "none";
+        }
+
+        function updateWordDisplay() {
+            let display = "";
+            for (const letter of chosenWord) {
+                display += guessedLetters.includes(letter) ? `${letter} ` : "_ ";
             }
+            wordDisplay.textContent = display.trim();
+        }
 
-            if (guess === randomNumber) {
-                result.textContent = "Gratulacje! Zgadłeś!";
-                result.style.color = "green";
-            } else if (guess < randomNumber) {
-                result.textContent = "Za mało! Spróbuj większej liczby.";
-                result.style.color = "orange";
-            } else {
-                result.textContent = "Za dużo! Spróbuj mniejszej liczby.";
-                result.style.color = "orange";
+        function generateLetterButtons() {
+            lettersDiv.innerHTML = "";
+            for (let i = 65; i <= 90; i++) {
+                const letter = String.fromCharCode(i);
+                const button = document.createElement("button");
+                button.textContent = letter;
+                button.onclick = () => handleGuess(letter);
+                lettersDiv.appendChild(button);
             }
         }
+
+        function handleGuess(letter) {
+            guessedLetters.push(letter);
+            const buttons = lettersDiv.querySelectorAll("button");
+            buttons.forEach((btn) => {
+                if (btn.textContent === letter) btn.disabled = true;
+            });
+
+            if (chosenWord.includes(letter)) {
+                updateWordDisplay();
+                if (!wordDisplay.textContent.includes("_")) {
+                    messageDiv.textContent = "Gratulacje! Wygrałeś!";
+                    resetButton.style.display = "block";
+                }
+            } else {
+                wrongGuesses++;
+                hangmanImage.src = `hangman${wrongGuesses}.png`;
+                if (wrongGuesses >= maxGuesses) {
+                    messageDiv.textContent = `Przegrałeś! Słowo to: ${chosenWord}`;
+                    resetButton.style.display = "block";
+                }
+            }
+        }
+
+        resetButton.onclick = initGame;
+
+        initGame();
     </script>
 </body>
 </html>
