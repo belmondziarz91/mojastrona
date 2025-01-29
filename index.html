@@ -3,11 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wykres z Pythona</title>
+    <title>Wykres Portfela</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <h1>Wykres wygenerowany w Pythonie</h1>
-    <img src="plot.png" alt="Wykres" width="600">
+    <h1>Porównanie Zwrotu Portfela i S&P 500</h1>
+
+    <label for="start_date">Wybierz datę początkową:</label>
+    <input type="date" id="start_date" value="2023-01-01">
+    <button onclick="fetchStockData()">Generuj wykres</button>
+
+    <canvas id="portfolioChart" width="800" height="400"></canvas>
+
+    <script>
+        async function fetchStockData() {
+            const startDate = document.getElementById("start_date").value;
+            const tickers = ["XTB.WA", "DNP.WA", "ZABKA.WA", "MBR.WA", "PKN.WA", "KTY.WA", "CPS.WA", "DGN.WA", "ASEE.WA", "ALE.WA", "APR.WA", "KRU.WA", "ELT.WA"];
+            const shares = { "XTB.WA": 14, "DNP.WA": 1, "ZABKA.WA": 15, "MBR.WA": 1, "PKN.WA": 10, "KTY.WA": 1, "CPS.WA": 25, "DGN.WA": 6, "ASEE.WA": 8, "ALE.WA": 10, "APR.WA": 20, "KRU.WA": 1, "ELT.WA": 10 };
+
+            const endDate = new Date().toISOString().split("T")[0];
+            const baseUrl = "https://query1.finance.yahoo.com/v8/finance/chart/";
+
+            let portfolioData = {};
+            let dates = [];
+
+            for (const ticker of tickers) {
+                try {
+                    const url = `${baseUrl}${ticker}?interval=1d&range=1y`;
+                    const response = await fetch(url);
+                    const data = await response.json();
+                    const prices = data.chart.result[0].indicators.adjclose[0].adjclose;
+                    const timestamps = data.chart.result[0].timestamp.map(ts => new Date(ts * 1000).toISOString().split("T")[0]);
+
+                    if (!dates.length) dates = timestamps;
+                    portfolioData[ticker] = prices;
+                } catch (error) {
+                    console.error(`Błąd pobierania ${ticker}:`, error);
+                }
+            }
+
+            if (!Object.keys(portfolioData).length) {
+                alert("Brak dostępnych danych");
+                return;
+            }
+
+            let portfolioValue = dates.map((date, index) => {
+                return tickers.reduce((sum, ticker) => sum + (portfolioData[ticker]?.[index] || 0) * (shares[ticker] || 0), 0);
+            });
+
+            const initialValue = portfolioValue[0];
+            const portfolioReturn = portfolioValue.map(value => ((value / initialValue) - 1) * 100);
+
+            renderChart(dates, portfolioReturn);
+        }
+
+        function renderChart(dates, portfolioReturn) {
+            const ctx = document.getElementById("portfolioChart").getContext("2d");
+            if (window.portfolioChart) {
+                window.portfolioChart.destroy();
+            }
+
+            window.portfolioChart = new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: "Zwrot Portfela",
+                        data: portfolioReturn,
+                        borderColor: "blue",
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: { display: true },
+                        y: { display: true, title: { display: true, text: "Zwrot (%)" } }
+                    }
+                }
+            });
+        }
+    </script>
 </body>
 </html>
