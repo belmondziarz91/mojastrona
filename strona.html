@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ankieta</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .question {
+            margin-bottom: 15px;
+        }
+        .question label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .question select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ankieta</h1>
+        <form id="surveyForm">
+            <div class="question">
+                <label for="q1">Pytanie 1: Jak oceniasz nasz produkt?</label>
+                <select id="q1" name="q1">
+                    <option value="1">1 - Bardzo źle</option>
+                    <option value="2">2 - Źle</option>
+                    <option value="3">3 - Średnio</option>
+                    <option value="4">4 - Dobrze</option>
+                    <option value="5">5 - Bardzo dobrze</option>
+                </select>
+            </div>
+            <!-- Dodaj więcej pytań tutaj -->
+            <div class="question">
+                <label for="q2">Pytanie 2: Jak oceniasz obsługę klienta?</label>
+                <select id="q2" name="q2">
+                    <option value="1">1 - Bardzo źle</option>
+                    <option value="2">2 - Źle</option>
+                    <option value="3">3 - Średnio</option>
+                    <option value="4">4 - Dobrze</option>
+                    <option value="5">5 - Bardzo dobrze</option>
+                </select>
+            </div>
+            <!-- Kontynuuj dodawanie pytań aż do 15 -->
+            <button type="submit">Wyślij odpowiedzi</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('surveyForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(this);
+            const answers = {};
+            formData.forEach((value, key) => {
+                answers[key] = value;
+            });
+
+            saveAnswers(answers);
+        });
+
+        async function saveAnswers(answers) {
+            const token = 'YOUR_GITHUB_TOKEN'; // Zastąp swoim tokenem GitHub
+            const repo = 'belmondziarz91/mojastrona'; // Zastąp swoim repozytorium
+            const path = 'answers.json';
+            const url = `https://api.github.com/repos/${repo}/contents/${path}`;
+
+            const response = await fetch(url, {
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+
+            const data = await response.json();
+            const content = JSON.parse(atob(data.content));
+            content.push(answers);
+
+            const newContent = btoa(JSON.stringify(content, null, 2));
+
+            await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: 'Update answers',
+                    content: newContent,
+                    sha: data.sha
+                })
+            });
+
+            alert('Dziękujemy za wypełnienie ankiety!');
+        }
+    </script>
+</body>
+</html>
